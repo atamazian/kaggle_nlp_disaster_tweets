@@ -45,8 +45,8 @@ class LitDataNLP(LightningDataModule):
         return input_ids, labels, attention_masks
        
     def setup(self, stage=None):
-        self.train_inputs, self.train_labels, self.train_masks = self.extract_data(self.train_df)
-        self.valid_inputs, self.valid_labels, self.valid_masks = self.extract_data(self.valid_df)
+        self.train_inputs, self.train_labels, self.train_masks = self.extract_data(df=self.train_df)
+        self.valid_inputs, self.valid_labels, self.valid_masks = self.extract_data(df=self.valid_df)
         
     def train_dataloader(self) -> DataLoader:
         train_data = TensorDataset(self.train_inputs, self.train_masks, self.train_labels)
