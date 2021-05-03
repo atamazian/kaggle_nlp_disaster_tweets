@@ -10,7 +10,7 @@ class LitDataNLP(LightningDataModule):
         tokenizer,
         max_length: int = 64,
         train_df: Union[str, pd.DataFrame] = 'train.csv',
-        train_df: Union[str, pd.DataFrame] = 'valid.csv',
+        valid_df: Union[str, pd.DataFrame] = 'valid.csv',
         batch_size: int = 32
     ):
         super().__init__()
