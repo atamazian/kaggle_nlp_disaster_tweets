@@ -12,7 +12,7 @@ class LitDataNLP(LightningDataModule):
         max_length: int = 64,
         train_df: Union[str, pd.DataFrame] = 'train.csv',
         valid_df: Union[str, pd.DataFrame] = 'valid.csv',
-        test_df: Union[str, pd.DataFrame] = 'test.csv'
+        test_df: Union[str, pd.DataFrame] = 'test.csv',
         batch_size: int = 32
     ):
         super().__init__()
