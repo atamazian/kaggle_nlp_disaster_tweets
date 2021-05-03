@@ -34,7 +34,10 @@ class LitDataNLP(LightningDataModule):
             raise ValueError(f'unable to read Pandas DataFrame/CSV file: {df}')
             
         df = df[df['text']!='']
-        df = df[['text', 'target']]
+        if labeled:
+            df = df[['text', 'target']]
+        else:
+            df = df['text']
         texts = df.text.values
         indices = self.tokenizer.batch_encode_plus(texts,
                     max_length=self.max_length, add_special_tokens=True, 
