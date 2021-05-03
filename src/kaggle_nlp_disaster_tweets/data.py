@@ -22,7 +22,7 @@ class LitDataNLP(LightningDataModule):
         self.valid_df = valid_df
         self.batch_size = batch_size
 
-    def prepare_data(self, df) -> tuple:
+    def extract_data(self, df) -> tuple:
         if isinstance(df, pd.DataFrame):
             pass
         elif isinstance(df, str):
@@ -36,7 +36,7 @@ class LitDataNLP(LightningDataModule):
         texts = df.text.values
         labels = torch.tensor(df.target.values, dtype=torch.long)
         indices = self.tokenizer.batch_encode_plus(texts,
-                    max_length=max_length, add_special_tokens=True, 
+                    max_length=self.max_length, add_special_tokens=True, 
                     return_attention_mask=True, pad_to_max_length=True,
                     truncation=True)
         input_ids=torch.tensor(np.array(indices["input_ids"]))
@@ -45,8 +45,8 @@ class LitDataNLP(LightningDataModule):
         return input_ids, labels, attention_masks
        
     def setup(self, stage=None):
-        self.train_inputs, self.train_labels, self.train_masks = prepare_data(self.train_df)
-        self.valid_inputs, self.valid_labels, self.valid_masks = prepare_data(self.valid_df)
+        self.train_inputs, self.train_labels, self.train_masks = self.extract_data(self.train_df)
+        self.valid_inputs, self.valid_labels, self.valid_masks = self.extract_data(self.valid_df)
         
     def train_dataloader(self) -> DataLoader:
         train_data = TensorDataset(self.train_inputs, self.train_masks, self.train_labels)
