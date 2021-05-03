@@ -21,7 +21,7 @@ class LitNLPModel(LightningModule):
         self.f1_score = F1(num_classes=2)
         
     def forward(self, b_input_ids, b_input_mask, b_labels):
-        output = self.model(b_input_ids, 
+        output = self.base_model(b_input_ids, 
                         token_type_ids=None, 
                         attention_mask=b_input_mask,
                         labels=b_labels)
