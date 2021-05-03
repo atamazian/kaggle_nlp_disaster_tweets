@@ -6,14 +6,14 @@ from transformers import AdamW, get_linear_schedule_with_warmup
 
 class LitNLPModel(LightningModule):
     def __init__(self, 
-                 model, 
+                 base_model, 
                  epochs,
                  lr: float = 6e-6,
                  warmup: int = 0):
       
         super().__init__()
         
-        self.model = model
+        self.base_model = base_model
         self.epochs = epochs
         self.lr = lr
         self.warmup = warmup
@@ -33,7 +33,6 @@ class LitNLPModel(LightningModule):
         b_labels = batch[2]
         z = self(b_input_ids, b_input_mask, b_labels)
         loss = z[0]
-        
         return loss
 
     def validation_step(self, batch, batch_idx):
@@ -48,7 +47,7 @@ class LitNLPModel(LightningModule):
         return val_loss
     
     def configure_optimizers(self):
-        optimizer = AdamW(model.parameters(), lr=self.lr)
+        optimizer = AdamW(self.base_model.parameters(), lr=self.lr)
         scheduler = get_linear_schedule_with_warmup(optimizer, 
                                             num_warmup_steps=self.warmup, 
                                             num_training_steps=189*self.epochs)
