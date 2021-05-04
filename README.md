@@ -12,4 +12,4 @@ You can install this package by:
 ! pip install git+https://github.com/atamazian/kaggle_nlp_disaster_tweets
 ```
 ## Run example notebook in Colab
-* [NLP Getting Started with Lightning](https://colab.research.google.com/github/atamazian/blob/main/kaggle_nlp_disaster_tweets/notebooks/nlp-getting-started-with-lightning.ipynb)
+* [NLP Getting Started with Lightning](https://colab.research.google.com/github/atamazian/kaggle_nlp_disaster_tweets/blob/main/notebooks/nlp-getting-started-with-lightning.ipynb)
