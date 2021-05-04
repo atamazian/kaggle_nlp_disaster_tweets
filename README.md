@@ -13,4 +13,3 @@ You can install this package by:
 ```
 ## Run example notebook in Colab
 * [NLP Getting Started with Lightning](https://colab.research.google.com/github/atamazian/kaggle_nlp_disaster_tweets/notebooks/nlp-getting-started-with-lightning.ipynb)
-* 
