@@ -22,7 +22,7 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/atamazian/fluc-analysis",
     project_urls={
-        "Bug Tracker": "https://github.com/atamazian/nlp_disaster_tweets/issues",
+        "Bug Tracker": "https://github.com/atamazian/kaggle_nlp_disaster_tweets/issues",
     },
     classifiers=[
         "Programming Language :: Python :: 3",
@@ -30,7 +30,7 @@ setup(
         "Operating System :: OS Independent",
     ],
     package_dir={"": "src"},
-    packages=find_packages(where="src"),
+    packages=find_packages(where="kaggle_nlp_disaster_tweets"),
     python_requires=">=3.6",
     setup_requires=[],
     install_requires=install_requires
