@@ -20,8 +20,8 @@ class LitDataNLP(LightningDataModule):
     ):
         super().__init__()
         
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name.
-                         model_max_length=max_length)
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            model_name, model_max_length=max_length)
         self.max_length = max_length
         self.train_df = train_df
         self.valid_df = valid_df
