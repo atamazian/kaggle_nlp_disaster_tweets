@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import os
+import re
 from typing import Union
 import torch
 from torch.utils.data import TensorDataset, DataLoader, RandomSampler, SequentialSampler
@@ -9,6 +10,31 @@ from pytorch_lightning import LightningDataModule, LightningModule
 from torchmetrics import F1
 from transformers import AutoConfig, AutoTokenizer, AutoModelForSequenceClassification, \
                          get_linear_schedule_with_warmup
+
+def preprocess(text):
+    text=text.lower()
+    # remove hyperlinks
+    text = re.sub(r'https?:\/\/.*[\r\n]*', '', text)
+    text = re.sub(r'http?:\/\/.*[\r\n]*', '', text)
+    #Replace &amp, &lt, &gt with &,<,> respectively
+    text=text.replace(r'&amp;?',r'and')
+    text=text.replace(r'&lt;',r'<')
+    text=text.replace(r'&gt;',r'>')
+    #remove mentions
+    text = re.sub(r"(?:\@)\w+", '', text)
+    #remove non ascii chars
+    text=text.encode("ascii",errors="ignore").decode()
+    #remove some puncts (except . ! ?)
+    text=re.sub(r'[:"#$%&\*+,-/:;<=>@\\^_`{|}~]+','',text)
+    text=re.sub(r'[!]+','!',text)
+    text=re.sub(r'[?]+','?',text)
+    text=re.sub(r'[.]+','.',text)
+    text=re.sub(r"'","",text)
+    text=re.sub(r"\(","",text)
+    text=re.sub(r"\)","",text)
+    
+    text=" ".join(text.split())
+    return text
 
 class LitDataNLP(LightningDataModule):
     def __init__(self,
@@ -30,11 +56,12 @@ class LitDataNLP(LightningDataModule):
         self.batch_size = batch_size
 
     def extract_data(self, df, labeled=True):            
-        df = df[df['text']!='']
-        texts = df.text.values
+        df = df[df['text'] != '']
+        df['text'] = df['text'].apply(preprocess)
+        texts = df.text.values.tolist()
         indices = self.tokenizer.batch_encode_plus(texts,
                     max_length=self.max_length, add_special_tokens=True, 
-                    return_attention_mask=True, pad_to_max_length=True,
+                    return_attention_mask=True, padding='max_length',
                     truncation=True)
         input_ids=torch.tensor(np.array(indices["input_ids"]))
         attention_masks=torch.tensor(np.array(indices["attention_mask"]), dtype=torch.long)
@@ -83,34 +110,29 @@ class LitNLPModel(LightningModule):
         self.model = AutoModelForSequenceClassification.from_pretrained(model_name, config=config)
         self.f1_score = F1(num_classes=2)
         
-    def forward(self, b_input_ids, b_input_mask, b_labels):
-        output = self.base_model(b_input_ids, 
+    def forward(self, b_input_ids, b_input_mask, b_labels=None):
+        output = self.model(b_input_ids, 
                         token_type_ids=None, 
                         attention_mask=b_input_mask,
                         labels=b_labels)
         return output
     
     def training_step(self, batch, batch_idx):
-        b_input_ids = batch[0]
-        b_input_mask = batch[1]
-        b_labels = batch[2]
+        b_input_ids, b_input_mask, b_labels = batch
         z = self(b_input_ids, b_input_mask, b_labels)
-        loss = z[0]
+        loss, logits = z[0], z[1]
         return loss
 
     def validation_step(self, batch, batch_idx):
-        b_input_ids = batch[0]
-        b_input_mask = batch[1]
-        b_labels = batch[2]
+        b_input_ids, b_input_mask, b_labels = batch
         z = self(b_input_ids, b_input_mask, b_labels)
-        val_loss = z[0]
-        logits = z[1]
+        val_loss, logits = z[0], z[1]
         self.log('val_loss', val_loss, prog_bar=True)
         self.log('val_f1_score', self.f1_score(logits, b_labels), prog_bar=True)
         return val_loss
-    
+        
     def configure_optimizers(self):
-        optimizer = AdamW(self.base_model.parameters(), lr=self.lr)
+        optimizer = AdamW(self.model.parameters(), lr=self.lr)
         scheduler = get_linear_schedule_with_warmup(optimizer, 
                                             num_warmup_steps=self.warmup, 
                                             num_training_steps=189*self.epochs)
