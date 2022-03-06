@@ -29,7 +29,7 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    package_dir={"": "src"},
+    package_dir={"": "kaggle_nlp_disaster_tweets"},
     packages=find_packages(where="kaggle_nlp_disaster_tweets"),
     python_requires=">=3.6",
     setup_requires=[],
