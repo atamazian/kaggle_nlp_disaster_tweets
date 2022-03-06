@@ -1,1 +1,1 @@
-from model import LitDataNLP, LitNLPModel
+from .model import LitDataNLP, LitNLPModel
