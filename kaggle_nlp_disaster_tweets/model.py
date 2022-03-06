@@ -7,7 +7,8 @@ from torch.utils.data import TensorDataset, DataLoader, RandomSampler, Sequentia
 from torch.optim import AdamW
 from pytorch_lightning import LightningDataModule, LightningModule
 from torchmetrics import F1
-from transformers import AutoTokenizer, AutoModelForSequenceClassification, get_linear_schedule_with_warmup
+from transformers import AutoConfig, AutoTokenizer, AutoModelForSequenceClassification, \
+                         get_linear_schedule_with_warmup
 
 class LitDataNLP(LightningDataModule):
     def __init__(self,
