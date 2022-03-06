@@ -80,7 +80,7 @@ class LitNLPModel(LightningModule):
         self.warmup = warmup
         
         config = AutoConfig.from_pretrained(model_name, num_labels=2)
-        self.model = AutoModelForSequenceClassification(model_name, config=config)
+        self.model = AutoModelForSequenceClassification.from_pretrained(model_name, config=config)
         self.f1_score = F1(num_classes=2)
         
     def forward(self, b_input_ids, b_input_mask, b_labels):
