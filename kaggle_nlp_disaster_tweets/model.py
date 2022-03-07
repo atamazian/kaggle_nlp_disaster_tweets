@@ -96,6 +96,7 @@ class LitNLPModel(LightningModule):
     def __init__(self, 
                  model_name,
                  epochs,
+                 
                  lr: float = 6e-6,
                  warmup: int = 0):
       
@@ -133,10 +134,7 @@ class LitNLPModel(LightningModule):
         
     def configure_optimizers(self):
         optimizer = AdamW(self.model.parameters(), lr=self.lr)
-        scheduler = get_linear_schedule_with_warmup(optimizer, 
-                                            num_warmup_steps=self.warmup, 
-                                            num_training_steps=189*self.epochs)
-        return [optimizer], [scheduler]
+        return optimizer
     
     def flat_accuracy(self, preds, labels):
         pred_flat = np.argmax(preds, axis=1).flatten()
