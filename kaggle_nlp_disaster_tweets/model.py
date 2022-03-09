@@ -41,9 +41,10 @@ class LitDataNLP(LightningDataModule):
         train_df,
         valid_df,
         test_df,
-        model_name='roberta-base',
-        max_length: int = 64,
-        batch_size: int = 32
+        model_name = 'roberta-base',
+        max_length = 64,
+        batch_size = 32,
+        clean_text = False
     ):
         super().__init__()
         
@@ -54,10 +55,12 @@ class LitDataNLP(LightningDataModule):
         self.valid_df = valid_df
         self.test_df = test_df
         self.batch_size = batch_size
+        self.clean_text = clean_text
 
     def extract_data(self, df, labeled=True):            
         df = df[df['text'] != '']
-        df['text'] = df['text'].apply(preprocess)
+        if self.clean_text:
+            df['text'] = df['text'].apply(preprocess)
         texts = df.text.values.tolist()
         indices = self.tokenizer.batch_encode_plus(texts,
                     max_length=self.max_length, add_special_tokens=True, 
